@@ -26,7 +26,7 @@ n_data = input_row;
 input = zscore(input);
 
 % normalisasi data target
-a = 10;
+a = 0;
 b = 1;
 target_train = a + ((target_train - min(target_train)).*(b-a))./(max(target_train) - min(target_train));
 
@@ -132,3 +132,69 @@ for Li=0:1
 end
 
 err_per_epoch = error_epoch_old;
+
+%% Plot error per epoch
+epoch = epoch - 1;
+figure(1);
+plot(err_per_epoch);
+ylabel('Error per epoch'); xlabel('Epoch')
+disp('Error per epoch minimum = ');
+min(err_per_epoch)
+disp('Error akhir = ');
+err_per_epoch(1, epoch)
+
+%% Testing BPNN
+input_test = dataset(n_train+1:end, 1:8);
+target_test = dataset(n_train+1:end, 9:10);
+[n_test_row, n_test_col] = size(input_test);
+
+% Normalisasi data dengan range -1 s.d. +1
+input_test = zscore(input_test);
+
+% Normalisasi data target
+a = 0;
+b = 1;
+target_test = a + ((target_test - min(target_test)).*(b-a))./(max(target_test) - min(target_test));
+
+% Proses feedforward dan menghitung recongnition rate
+test_true = 0;
+test_false = 0;
+error = [];
+yk_pred = [];
+
+for n=1:n_test_row
+    xi_test = input_test(n,:);
+    ti_test = target_test(n,:);
+
+    % Komputasi input layer ke hidden layer
+    z_inj_test = xi_test * v_ij + v_0j;
+    for j=1:n_hidden_layer
+        zj_test(1,j) = 1 / (1 + exp(-z_inj_test(1,j)));
+    end
+
+    % Komputasi hidden layer ke output layer
+    y_ink_test = zj_test * w_jk + w_0k;
+    for k=1:n_output_layer
+        yk_test(1,k) = 1 / (1 + exp(-y_ink_test(1,k)));
+    end
+    yk_pred = [yk_pred;yk_test];
+
+    % Store error
+    error_test(1,n) = 0.5 * sum((yk_test - ti_test).^2);
+end
+
+figure(2)
+plot(yk_pred)
+hold on
+plot(target_test)
+title('Y Comparison'); xlabel('n-test');
+ylabel('Y')
+legend('Y1 ANN', 'Y2 ANN', 'Y1', 'Y2')
+hold off
+
+figure(3)
+plot(error_test)
+title('Offset Testing'); xlabel('n-test'); ylabel('Offset')
+
+MSE = sum(error_test) / n_test_row
+RMSE = sqrt(MSE)
