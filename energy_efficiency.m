@@ -89,9 +89,46 @@ for Li=0:1
             % store error
             error(1,n) = 0.5 * sum((yk - ti).^2);
 
-            
+            %% Backpropagation
+
+            % komputasi dari output layer ke hidden layer
+            dok = (yk - ti).*(yk).*(1 - yk);
+            delta_wjk = alpha * zj' * dok + miu * delta_wjk_old;
+            delta_w0k = alpha * dok + miu * delta_w0k_old;
+            delta_wjk_old = delta_wjk;
+            delta_w0k_old = delta_w0k;
+
+            % komputasi dari hidden layer ke input layer
+            doinj = dok * w_jk';
+            doj = doinj.*zj.*(1-zj);
+            delta_vij = alpha * xi' * doj + miu * delta_vij_old;
+            delta_v0j = alpha * doj + miu * delta_v0j_old;
+            delta_vij_old = delta_vij;
+            delta_v0j_old = delta_v0j;
+
+            % memperbarui bobot dan bias
+            w_jk = w_jk - delta_wjk;
+            w_0k = w_0k - delta_w0k;
+            v_ij = v_ij - delta_vij;
+            v_0j = v_0j - delta_v0j;
+        end
+        err_per_epoch(1, epoch) = sum(error) / n_data;
+
+        if err_per_epoch(1, epoch) < target_err
+            stop = 1;
         end
 
+        epoch = epoch + 1;
+    end
+    
+    if Li == 1
+        error_epoch_old = err_per_epoch;
     end
 
+    if min(err_per_epoch) < min (error_epoch_old)
+        error_epoch_old = err_per_epoch;
+        ibest = Li;
+    end
 end
+
+err_per_epoch = error_epoch_old;
