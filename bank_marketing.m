@@ -6,12 +6,12 @@ missing = ismissing(dataset);
 rowsWithMissing = dataset(any(missing,2),:);
 % disp(rowsWithMissing)
 
-% Remove row with unknown value
+% Remove row with unknown value ???
 
 dataset.job = categorical(dataset.job);
 dataset.marital = categorical(dataset.marital);
 dataset.education  = categorical(dataset.education, ...
-    {'primary', 'secondary', 'tertiary', 'unknown'}, 'Ordinal',true);
+    {'unknown', 'primary', 'secondary', 'tertiary'}, 'Ordinal',true);
 dataset.default = categorical(dataset.default);
 dataset.housing = categorical(dataset.housing);
 dataset.loan = categorical(dataset.loan);
@@ -23,6 +23,7 @@ dataset.y = categorical(dataset.y);
 
 %% Feature encoding
 
+% one hot encoding
 oneHotTable = table();
 oneHotTable = [generate_onehot_table(dataset.job, 'job') ...
     generate_onehot_table(dataset.marital, 'marital') ...
@@ -34,6 +35,15 @@ oneHotTable = [generate_onehot_table(dataset.job, 'job') ...
     generate_onehot_table(dataset.month, 'month') ...
     generate_onehot_table(dataset.poutcome, 'poutcome') ...
     ];
+
+% label encoding
+labelEncTable = table(double(dataset.education),'VariableNames',{'education'});
+
+% one hot output
+oneHotOutputTable = [generate_onehot_table(dataset.y, 'y')];
+
+% all encoded dataset
+encodedCatDataset = [oneHotTable labelEncTable oneHotOutputTable];
 
 
 % format compact
