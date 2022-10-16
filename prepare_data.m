@@ -1,6 +1,11 @@
 function preparedDataset = prepare_data()
     %% Input dataset
+    
+    % 10% dataset
     dataset = readtable("bank.csv");
+
+    % Full dataset
+    % dataset = readtable("bank-full.csv");
 
     % Check missing values
     missing = ismissing(dataset);
