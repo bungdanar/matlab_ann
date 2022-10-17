@@ -13,7 +13,7 @@ target_err = 0.01;
 i_best = 0;
 
 %% Input dataset
-dataset = prepare_data();
+dataset = prepare_data_additional();
 dataset = table2array(dataset);
 [row_data, col_data] = size(dataset);
 
