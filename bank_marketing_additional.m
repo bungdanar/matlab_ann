@@ -7,10 +7,10 @@ n_hidden_neuron = 10;
 train_percentage = 80/100;
 
 % Maksimal epoch
-error_epoch_old = 1:10000;
 max_epoch = 10000;
 target_err = 0.01;
 i_best = 0;
+error_epoch_old = 1:max_epoch;
 
 %% Input dataset
 dataset = prepare_data_additional();
