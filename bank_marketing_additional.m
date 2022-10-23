@@ -1,10 +1,10 @@
 %% Inisialisasi parameter
 
 % Nilai yang bisa diubah-ubah oleh setiap anggota
-alpha = 0.25;
-miu = 0.75;
-n_hidden_neuron = 10;
-train_percentage = 80/100;
+alpha = 0.31;
+miu = 0.74;
+n_hidden_neuron = 13;
+train_percentage = 70/100;
 
 % Maksimal epoch
 max_epoch = 10000;
@@ -183,9 +183,9 @@ end
 %% Figure testing result
 
 figure(2)
-plot(yk_pred)
+plot(yk_pred(1:100,:))
 hold on
-plot(target_test)
+plot(target_test(1:100,:))
 title('Y Comparison'); xlabel('n-test');
 ylabel('Y')
 legend('Y1 ANN', 'Y2 ANN', 'Y1', 'Y2')
@@ -197,3 +197,27 @@ title('Offset Testing'); xlabel('n-test'); ylabel('Offset')
 
 MSE = sum(error_test) / n_test_row
 RMSE = sqrt(MSE)
+
+for q = 1:size(yk_pred,1)
+    if yk_pred(q,1) >= 0.6
+        yk_pred_adjusted(q, 1) = 1;
+    else
+        yk_pred_adjusted(q, 1) = 0;
+    end
+    
+    if yk_pred(q, 2) >= 0.6
+        yk_pred_adjusted(q, 2) = 1;
+    else
+        yk_pred_adjusted(q, 2) = 0;
+    end
+end
+
+match = 0;
+for r = 1:size(yk_pred_adjusted,1)
+    if yk_pred_adjusted(r, 1) == target_test(r, 1) & ...
+            yk_pred_adjusted(r, 2) == target_test(r, 2)
+        match = match + 1;
+    end
+end
+
+recognition_rate = match / size(target_test, 1) * 100;
